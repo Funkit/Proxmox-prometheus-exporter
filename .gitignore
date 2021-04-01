@@ -14,5 +14,8 @@
 # Visual studio code build files
 .vscode/
 
+# Secrets file
+secrets.yml
+
 # Dependency directories (remove the comment below to include it)
 # vendor/

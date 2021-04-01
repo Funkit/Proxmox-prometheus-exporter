@@ -2,8 +2,13 @@ package main
 
 import (
 	"fmt"
+	"proxmox-prometheus-exporter/connectioninfo"
 )
 
 func main() {
-	fmt.Println("Hello world")
+	var connInfo connectioninfo.ConnectionInfo
+
+	connInfo.ReadFile("secrets.yml")
+
+	fmt.Println(connInfo)
 }
