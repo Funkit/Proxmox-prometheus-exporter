@@ -18,13 +18,17 @@ func TokenHeader(c *connection.Info) string {
 
 func newRequest(c *connection.Info, targetUrl string) (*http.Request, error) {
 	req, err := http.NewRequest(http.MethodGet, c.Address+targetUrl, nil)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Add("Authorization", TokenHeader(c))
-	return req, err
+	return req, nil
 }
 
 func NewClient(c *connection.Info) *Client {
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+		ForceAttemptHTTP2: true,
 	}
 	httpClient := &http.Client{Transport: tr}
 
