@@ -1,7 +1,7 @@
-package connectioninfo
+package connection
 
 // Example yml file //
-// ipaddr: 192.0.2.12
+// address: 192.0.2.12
 // userid:
 //   username: toto
 //   idrealm: pve
@@ -26,13 +26,13 @@ type ApiToken struct {
 	Token string `yaml:"token"`
 }
 
-type ConnectionInfo struct {
-	Address  string   `yaml:"ipaddr"`
-	UserId   UserID   `yaml:"userid,omitempty"`
-	ApiToken ApiToken `yaml:"apitoken,omitempty"`
+type Info struct {
+	Address  string   `yaml:"apiaddress"`
+	UserId   UserID   `yaml:"userid"`
+	ApiToken ApiToken `yaml:"apitoken"`
 }
 
-func (c *ConnectionInfo) ReadFile(filePath string) *ConnectionInfo {
+func (c *Info) ReadFile(filePath string) *Info {
 	yamlFile, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
