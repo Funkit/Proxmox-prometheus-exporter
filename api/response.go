@@ -19,29 +19,17 @@ func ParseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, e
 	var vmList []VMResource
 	for _, row := range buffer.Rows {
 		if row["type"] == "node" {
-			jsonbody, err := json.Marshal(row)
-			if err != nil {
-				return nil, nil, err
-			}
-
 			var buffer NodeResource
-			if err := json.Unmarshal([]byte(jsonbody), &buffer); err != nil {
+			if err := buffer.ParseMap(row); err != nil {
 				return nil, nil, err
 			}
-
 			nodeList = append(nodeList, buffer)
 		}
 		if row["type"] == "qemu" {
-			jsonbody, err := json.Marshal(row)
-			if err != nil {
-				return nil, nil, err
-			}
-
 			var buffer VMResource
-			if err := json.Unmarshal([]byte(jsonbody), &buffer); err != nil {
+			if err := buffer.ParseMap(row); err != nil {
 				return nil, nil, err
 			}
-
 			vmList = append(vmList, buffer)
 		}
 	}
@@ -57,16 +45,10 @@ func ParseNodes(responseBody []byte) ([]Node, error) {
 
 	var nodeList []Node
 	for _, row := range buffer.Rows {
-		jsonbody, err := json.Marshal(row)
-		if err != nil {
-			return nil, err
-		}
-
 		var buffer Node
-		if err := json.Unmarshal([]byte(jsonbody), &buffer); err != nil {
+		if err := buffer.ParseMap(row); err != nil {
 			return nil, err
 		}
-
 		nodeList = append(nodeList, buffer)
 	}
 	return nodeList, nil

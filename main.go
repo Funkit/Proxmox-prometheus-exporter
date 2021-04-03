@@ -59,18 +59,5 @@ func main() {
 
 	for _, node := range nodeList {
 		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
-
-		respBody, err := client.Get("/nodes/" + node.Node + "/network")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		var buffer map[string]interface{}
-
-		if err := json.Unmarshal([]byte(respBody), &buffer); err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(buffer)
 	}
 }

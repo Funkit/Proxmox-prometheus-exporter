@@ -1,10 +1,24 @@
 package api
 
+import "encoding/json"
+
 // /nodes
 type Node struct {
 	Name           string `json:"node,omitempty"`
 	Status         string `json:"status"`
 	SslFingerprint string `json:"ssl_fingerprint,omitempty"`
+}
+
+func (node *Node) ParseMap(element map[string]interface{}) error {
+	jsonbody, err := json.Marshal(element)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal([]byte(jsonbody), &node); err != nil {
+		return err
+	}
+	return nil
 }
 
 // /cluster/resources
@@ -22,9 +36,33 @@ type VMResource struct {
 	Template          int     `json:"template"`
 }
 
+func (node *VMResource) ParseMap(element map[string]interface{}) error {
+	jsonbody, err := json.Marshal(element)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal([]byte(jsonbody), &node); err != nil {
+		return err
+	}
+	return nil
+}
+
 type NodeResource struct {
 	Node   string `json:"node"`
 	Status string `json:"status"`
+}
+
+func (node *NodeResource) ParseMap(element map[string]interface{}) error {
+	jsonbody, err := json.Marshal(element)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal([]byte(jsonbody), &node); err != nil {
+		return err
+	}
+	return nil
 }
 
 // /nodes/<node name>/network
