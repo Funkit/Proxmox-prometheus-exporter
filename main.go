@@ -11,24 +11,40 @@ import (
 
 const SECRETS_FILE_PATH = "../secrets/secrets_perso.yml"
 
-type Results struct {
-	Rows []map[string]interface{} `json:"data"`
-}
-
 func main() {
 	var connInfo connection.Info
 	connInfo.ReadFile(SECRETS_FILE_PATH)
 
 	client := api.NewClient(&connInfo)
 
-	// querying /cluster/resources
+	// /nodes
+	respBody1, err := client.Get("/nodes")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var buffer1 api.Results
+	if err := json.Unmarshal([]byte(respBody1), &buffer1); err != nil {
+		log.Fatal(err)
+	}
+
+	nodes, err := api.ParseNodes(respBody1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, node := range nodes {
+		fmt.Println("Node name:" + node.Name + "; Fingerprint:" + node.SslFingerprint)
+	}
+
+	// /cluster/resources
 	respBody, err := client.Get("/cluster/resources")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var buffer Results
-	if err := json.Unmarshal([]byte(respBody), &buffer); err != nil {
+	var buffer2 api.Results
+	if err := json.Unmarshal([]byte(respBody), &buffer2); err != nil {
 		log.Fatal(err)
 	}
 

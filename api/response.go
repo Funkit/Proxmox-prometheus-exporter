@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 )
 
-type results struct {
+type Results struct {
 	Rows []map[string]interface{} `json:"data"`
 }
 
 func ParseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, error) {
-	var buffer results
+	var buffer Results
 
 	if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
 		return nil, nil, err
@@ -46,4 +46,28 @@ func ParseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, e
 		}
 	}
 	return nodeList, vmList, nil
+}
+
+func ParseNodes(responseBody []byte) ([]Node, error) {
+	var buffer Results
+
+	if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
+		return nil, err
+	}
+
+	var nodeList []Node
+	for _, row := range buffer.Rows {
+		jsonbody, err := json.Marshal(row)
+		if err != nil {
+			return nil, err
+		}
+
+		var buffer Node
+		if err := json.Unmarshal([]byte(jsonbody), &buffer); err != nil {
+			return nil, err
+		}
+
+		nodeList = append(nodeList, buffer)
+	}
+	return nodeList, nil
 }
