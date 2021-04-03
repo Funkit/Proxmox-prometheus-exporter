@@ -21,38 +21,40 @@ func main() {
 
 	client := api.NewClient(&connInfo)
 
-	// querying /nodes
-	respBody, err := client.Get("/nodes")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var queryOutput api.Nodes
-	if err := json.Unmarshal([]byte(respBody), &queryOutput); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(queryOutput)
-
 	// querying /cluster/resources
-	respBody2, err := client.Get("/cluster/resources")
+	respBody, err := client.Get("/cluster/resources")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var buffer Results
-	if err := json.Unmarshal([]byte(respBody2), &buffer); err != nil {
+	if err := json.Unmarshal([]byte(respBody), &buffer); err != nil {
 		log.Fatal(err)
 	}
 
-	nodeList, vmList, err := api.ParseClusterResources(respBody2)
+	nodeList, vmList, err := api.ParseClusterResources(respBody)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, node := range nodeList {
-		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
-	}
 	for _, vm := range vmList {
 		fmt.Println("VMID:" + strconv.Itoa(vm.VMID) + "; Status:" + vm.Status)
+	}
+
+	for _, node := range nodeList {
+		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
+
+		respBody, err := client.Get("/nodes/" + node.Node + "/network")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var buffer map[string]interface{}
+
+		if err := json.Unmarshal([]byte(respBody), &buffer); err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(buffer)
 	}
 }

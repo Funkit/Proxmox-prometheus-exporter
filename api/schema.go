@@ -30,3 +30,18 @@ type NodeResource struct {
 	Node   string `json:"node"`
 	Status string `json:"status"`
 }
+
+// /nodes/<node name>/network
+
+type NodeNetworkInterface struct {
+	Name          string   `json:"iface"`
+	InterfaceType string   `json:"type"`
+	Active        int      `json:"active"`
+	IPAddress     string   `json:"address"`
+	Gateway       string   `json:"gateway"`
+	Autostart     int      `json:"autostart"`
+	BridgePorts   string   `json:"bridge_ports"`
+	CIDR          string   `json:"cidr"`
+	Families      []string `json:"families"`
+	Options       []string `json:"options"`
+}
