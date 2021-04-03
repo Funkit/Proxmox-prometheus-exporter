@@ -12,7 +12,7 @@ type Client struct {
 	info       *connection.Info
 }
 
-func TokenHeader(c *connection.Info) string {
+func tokenHeader(c *connection.Info) string {
 	return "PVEAPIToken=" + c.UserId.Username + "@" + c.UserId.IdRealm + "!" + c.ApiToken.Id + "=" + c.ApiToken.Token
 }
 
@@ -21,7 +21,7 @@ func newRequest(c *connection.Info, targetUrl string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", TokenHeader(c))
+	req.Header.Add("Authorization", tokenHeader(c))
 	return req, nil
 }
 

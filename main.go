@@ -21,6 +21,7 @@ func main() {
 
 	client := api.NewClient(&connInfo)
 
+	// querying /nodes
 	respBody, err := client.Get("/nodes")
 	if err != nil {
 		log.Fatal(err)
@@ -32,6 +33,7 @@ func main() {
 	}
 	fmt.Println(queryOutput)
 
+	// querying /cluster/resources
 	respBody2, err := client.Get("/cluster/resources")
 	if err != nil {
 		log.Fatal(err)
@@ -42,35 +44,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var nodeList []api.NodeResource
-	var vmList []api.VMResource
-	for _, row := range buffer.Rows {
-		if row["type"] == "node" {
-			jsonbody, err := json.Marshal(row)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			var buffer api.NodeResource
-			if err := json.Unmarshal([]byte(jsonbody), &buffer); err != nil {
-				log.Fatal(err)
-			}
-
-			nodeList = append(nodeList, buffer)
-		}
-		if row["type"] == "qemu" {
-			jsonbody, err := json.Marshal(row)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			var buffer api.VMResource
-			if err := json.Unmarshal([]byte(jsonbody), &buffer); err != nil {
-				log.Fatal(err)
-			}
-
-			vmList = append(vmList, buffer)
-		}
+	nodeList, vmList, err := api.ParseClusterResources(respBody2)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	for _, node := range nodeList {
