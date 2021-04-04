@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"proxmox-prometheus-exporter/api"
 	"proxmox-prometheus-exporter/connection"
 	"strconv"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const SECRETS_FILE_PATH = "../secrets/secrets_perso.yml"
@@ -40,4 +43,7 @@ func main() {
 	for _, node := range nodeList {
 		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
 	}
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":2112", nil)
 }
