@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"proxmox-prometheus-exporter/api"
@@ -18,17 +17,7 @@ func main() {
 	client := api.NewClient(&connInfo)
 
 	// /nodes
-	respBody1, err := client.Get("/nodes")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var buffer1 api.Results
-	if err := json.Unmarshal([]byte(respBody1), &buffer1); err != nil {
-		log.Fatal(err)
-	}
-
-	nodes, err := api.ParseNodes(respBody1)
+	nodes, err := client.GetNodes()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,17 +27,8 @@ func main() {
 	}
 
 	// /cluster/resources
-	respBody, err := client.Get("/cluster/resources")
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	var buffer2 api.Results
-	if err := json.Unmarshal([]byte(respBody), &buffer2); err != nil {
-		log.Fatal(err)
-	}
-
-	nodeList, vmList, err := api.ParseClusterResources(respBody)
+	nodeList, vmList, err := client.GetClusterResources()
 	if err != nil {
 		log.Fatal(err)
 	}

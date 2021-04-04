@@ -3,6 +3,7 @@ package api
 import (
 	"crypto/tls"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"proxmox-prometheus-exporter/connection"
 )
@@ -58,4 +59,34 @@ func (c *Client) Get(url string) (responseBody []byte, err error) {
 	}
 
 	return respBody, nil
+}
+
+func (c *Client) GetNodes() ([]Node, error) {
+
+	respBody, err := c.Get("/nodes")
+	if err != nil {
+		return nil, err
+	}
+
+	nodeList, err := parseNodes(respBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return nodeList, nil
+}
+
+func (c *Client) GetClusterResources() ([]NodeResource, []VMResource, error) {
+
+	respBody, err := c.Get("/cluster/resources")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	nodeList, vmList, err := parseClusterResources(respBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return nodeList, vmList, nil
 }

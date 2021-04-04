@@ -8,7 +8,7 @@ type Results struct {
 	Rows []map[string]interface{} `json:"data"`
 }
 
-func ParseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, error) {
+func parseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, error) {
 	var buffer Results
 
 	if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
@@ -36,7 +36,7 @@ func ParseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, e
 	return nodeList, vmList, nil
 }
 
-func ParseNodes(responseBody []byte) ([]Node, error) {
+func parseNodes(responseBody []byte) ([]Node, error) {
 	var buffer Results
 
 	if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
