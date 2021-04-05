@@ -1,43 +1,43 @@
 package main
 
 import (
-  "fmt"
-  "log"
-  "proxmox-prometheus-exporter/api"
-  "proxmox-prometheus-exporter/connection"
-  "strconv"
+	"fmt"
+	"log"
+	"proxmox-prometheus-exporter/api"
+	"proxmox-prometheus-exporter/connection"
+	"strconv"
 )
 
-const SECRETS_FILE_PATH = "../secrets/secrets_perso.yml"
+const secretsFilePath = "../secrets/secrets_perso.yml"
 
 func main() {
-  var connInfo connection.Info
-  connInfo.ReadFile(SECRETS_FILE_PATH)
+	var connInfo connection.Info
+	connInfo.ReadFile(secretsFilePath)
 
-  client := api.NewClient(&connInfo)
+	client := api.NewClient(&connInfo)
 
-  // /nodes
-  nodes, err := client.GetNodes()
-  if err != nil {
-    log.Fatal(err)
-  }
+	// /nodes
+	nodes, err := client.GetNodes()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  for _, node := range nodes {
-    fmt.Println("Node name:" + node.Name + "; Fingerprint:" + node.SslFingerprint)
-  }
+	for _, node := range nodes {
+		fmt.Println("Node name:" + node.Name + "; Fingerprint:" + node.SslFingerprint)
+	}
 
-  // /cluster/resources
+	// /cluster/resources
 
-  nodeList, vmList, err := client.GetClusterResources()
-  if err != nil {
-    log.Fatal(err)
-  }
+	nodeList, vmList, err := client.GetClusterResources()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  for _, vm := range vmList {
-    fmt.Println("VMID:" + strconv.Itoa(vm.VMID) + "; Status:" + vm.Status)
-  }
+	for _, vm := range vmList {
+		fmt.Println("VMID:" + strconv.Itoa(vm.VMID) + "; Status:" + vm.Status)
+	}
 
-  for _, node := range nodeList {
-    fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
-  }
+	for _, node := range nodeList {
+		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
+	}
 }
