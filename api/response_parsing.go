@@ -1,55 +1,55 @@
 package api
 
 import (
-	"encoding/json"
+  "encoding/json"
 )
 
 type Results struct {
-	Rows []map[string]interface{} `json:"data"`
+  Rows []map[string]interface{} `json:"data"`
 }
 
 func parseClusterResources(responseBody []byte) ([]NodeResource, []VMResource, error) {
-	var buffer Results
+  var buffer Results
 
-	if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
-		return nil, nil, err
-	}
+  if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
+    return nil, nil, err
+  }
 
-	var nodeList []NodeResource
-	var vmList []VMResource
-	for _, row := range buffer.Rows {
-		if row["type"] == "node" {
-			var buffer NodeResource
-			if err := buffer.ParseMap(row); err != nil {
-				return nil, nil, err
-			}
-			nodeList = append(nodeList, buffer)
-		}
-		if row["type"] == "qemu" {
-			var buffer VMResource
-			if err := buffer.ParseMap(row); err != nil {
-				return nil, nil, err
-			}
-			vmList = append(vmList, buffer)
-		}
-	}
-	return nodeList, vmList, nil
+  var nodeList []NodeResource
+  var vmList []VMResource
+  for _, row := range buffer.Rows {
+    if row["type"] == "node" {
+      var buffer NodeResource
+      if err := buffer.ParseMap(row); err != nil {
+        return nil, nil, err
+      }
+      nodeList = append(nodeList, buffer)
+    }
+    if row["type"] == "qemu" {
+      var buffer VMResource
+      if err := buffer.ParseMap(row); err != nil {
+        return nil, nil, err
+      }
+      vmList = append(vmList, buffer)
+    }
+  }
+  return nodeList, vmList, nil
 }
 
 func parseNodes(responseBody []byte) ([]Node, error) {
-	var buffer Results
+  var buffer Results
 
-	if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
-		return nil, err
-	}
+  if err := json.Unmarshal([]byte(responseBody), &buffer); err != nil {
+    return nil, err
+  }
 
-	var nodeList []Node
-	for _, row := range buffer.Rows {
-		var buffer Node
-		if err := buffer.ParseMap(row); err != nil {
-			return nil, err
-		}
-		nodeList = append(nodeList, buffer)
-	}
-	return nodeList, nil
+  var nodeList []Node
+  for _, row := range buffer.Rows {
+    var buffer Node
+    if err := buffer.ParseMap(row); err != nil {
+      return nil, err
+    }
+    nodeList = append(nodeList, buffer)
+  }
+  return nodeList, nil
 }

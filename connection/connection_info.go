@@ -10,41 +10,41 @@ package connection
 //   token: AAAAABBBBBCCCCCDDDDD
 
 import (
-	"io/ioutil"
+  "io/ioutil"
 
-	"gopkg.in/yaml.v2"
+  "gopkg.in/yaml.v2"
 )
 
 type UserID struct {
-	Username string `yaml:"username"`
-	IdRealm  string `yaml:"idrealm"`
+  Username string `yaml:"username"`
+  IdRealm  string `yaml:"idrealm"`
 }
 
 type ApiToken struct {
-	Id    string `yaml:"id"`
-	Token string `yaml:"token"`
+  Id    string `yaml:"id"`
+  Token string `yaml:"token"`
 }
 
 type Info struct {
-	Address  string   `yaml:"apiaddress"`
-	UserId   UserID   `yaml:"userid"`
-	ApiToken ApiToken `yaml:"apitoken"`
+  Address  string   `yaml:"apiaddress"`
+  UserId   UserID   `yaml:"userid"`
+  ApiToken ApiToken `yaml:"apitoken"`
 }
 
 func (c *Info) parseYaml(rawContent []byte) error {
-	err := yaml.Unmarshal(rawContent, &c)
-	if err != nil {
-		return err
-	}
+  err := yaml.Unmarshal(rawContent, &c)
+  if err != nil {
+    return err
+  }
 
-	return nil
+  return nil
 }
 
 func (c *Info) ReadFile(filePath string) error {
-	rawContent, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
+  rawContent, err := ioutil.ReadFile(filePath)
+  if err != nil {
+    return err
+  }
 
-	return c.parseYaml(rawContent)
+  return c.parseYaml(rawContent)
 }
