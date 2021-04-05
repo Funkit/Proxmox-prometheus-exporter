@@ -11,15 +11,17 @@ import (
 const secretsFilePath = "../secrets/secrets_perso.yml"
 
 func main() {
-	var connInfo connection.Info
-	connInfo.ReadFile(secretsFilePath)
-
-	client := api.NewClient(&connInfo)
-
-	// /nodes
-	nodes, err := client.GetNodes()
+	connInfo, err := connection.GetInfoFromFile(secretsFilePath)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	client := api.NewClient(connInfo)
+
+	// /nodes
+	nodes, err2 := client.GetNodes()
+	if err != nil {
+		log.Fatal(err2)
 	}
 
 	for _, node := range nodes {
@@ -28,9 +30,9 @@ func main() {
 
 	// /cluster/resources
 
-	nodeList, vmList, err := client.GetClusterResources()
+	nodeList, vmList, err3 := client.GetClusterResources()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err3)
 	}
 
 	for _, vm := range vmList {

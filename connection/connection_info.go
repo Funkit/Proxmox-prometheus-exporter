@@ -43,12 +43,19 @@ func (c *Info) parseYaml(rawContent []byte) error {
 	return nil
 }
 
-//ReadFile read the connection information YAML file and parse it into the Info structure
-func (c *Info) ReadFile(filePath string) error {
+//GetInfoFromFile Get connection information from a YAML file
+func GetInfoFromFile(filePath string) (*Info, error) {
 	rawContent, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return c.parseYaml(rawContent)
+	var c Info
+
+	err2 := c.parseYaml(rawContent)
+	if err2 != nil {
+		return nil, err
+	}
+
+	return &c, nil
 }
