@@ -11,7 +11,6 @@ package connection
 
 import (
 	"io/ioutil"
-	"log"
 
 	"gopkg.in/yaml.v2"
 )
@@ -32,15 +31,20 @@ type Info struct {
 	ApiToken ApiToken `yaml:"apitoken"`
 }
 
-func (c *Info) ReadFile(filePath string) *Info {
-	yamlFile, err := ioutil.ReadFile(filePath)
+func (c *Info) parseYaml(rawContent []byte) error {
+	err := yaml.Unmarshal(rawContent, &c)
 	if err != nil {
-		log.Fatal(err)
-	}
-	err = yaml.Unmarshal([]byte(yamlFile), &c)
-	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	return c
+	return nil
+}
+
+func (c *Info) ReadFile(filePath string) error {
+	rawContent, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
+
+	return c.parseYaml(rawContent)
 }
