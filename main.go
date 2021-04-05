@@ -11,18 +11,20 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const SECRETS_FILE_PATH = "../secrets/secrets_perso.yml"
+const secretsFilePath = "../secrets/secrets_perso.yml"
 
 func main() {
-	var connInfo connection.Info
-	connInfo.ReadFile(SECRETS_FILE_PATH)
-
-	client := api.NewClient(&connInfo)
-
-	// /nodes
-	nodes, err := client.GetNodes()
+	connInfo, err := connection.GetInfoFromFile(secretsFilePath)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	client := api.NewClient(connInfo)
+
+	// /nodes
+	nodes, err2 := client.GetNodes()
+	if err != nil {
+		log.Fatal(err2)
 	}
 
 	for _, node := range nodes {
@@ -31,9 +33,9 @@ func main() {
 
 	// /cluster/resources
 
-	nodeList, vmList, err := client.GetClusterResources()
-	if err != nil {
-		log.Fatal(err)
+	nodeList, vmList, err3 := client.GetClusterResources()
+	if err3 != nil {
+		log.Fatal(err3)
 	}
 
 	for _, vm := range vmList {
@@ -42,6 +44,14 @@ func main() {
 
 	for _, node := range nodeList {
 		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
+
+		networkInterfaceList, err4 := client.GetNodeNetwork(node.Node)
+		if err4 != nil {
+			log.Fatal(err4)
+		}
+		for _, networkInterface := range networkInterfaceList {
+			fmt.Println(networkInterface)
+		}
 	}
 
 	http.Handle("/metrics", promhttp.Handler())

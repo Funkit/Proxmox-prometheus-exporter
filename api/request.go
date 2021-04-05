@@ -8,17 +8,18 @@ import (
 	"proxmox-prometheus-exporter/connection"
 )
 
+// Client http.Client and connection information
 type Client struct {
 	httpClient *http.Client
 	info       *connection.Info
 }
 
 func tokenHeader(c *connection.Info) string {
-	return "PVEAPIToken=" + c.UserId.Username + "@" + c.UserId.IdRealm + "!" + c.ApiToken.Id + "=" + c.ApiToken.Token
+	return "PVEAPIToken=" + c.UserID.Username + "@" + c.UserID.IDRealm + "!" + c.APIToken.ID + "=" + c.APIToken.Token
 }
 
-func newRequest(c *connection.Info, targetUrl string) (*http.Request, error) {
-	req, err := http.NewRequest(http.MethodGet, c.Address+targetUrl, nil)
+func newRequest(c *connection.Info, targetURL string) (*http.Request, error) {
+	req, err := http.NewRequest(http.MethodGet, c.Address+targetURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26,6 +27,7 @@ func newRequest(c *connection.Info, targetUrl string) (*http.Request, error) {
 	return req, nil
 }
 
+//NewClient create new client with TLS check disabled and information to log with a token to the API
 func NewClient(c *connection.Info) *Client {
 	tr := &http.Transport{
 		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
@@ -41,7 +43,7 @@ func NewClient(c *connection.Info) *Client {
 	return client
 }
 
-func (c *Client) Get(url string) (responseBody []byte, err error) {
+func (c *Client) get(url string) (responseBody []byte, err error) {
 	req, err := newRequest(c.info, url)
 	if err != nil {
 		return nil, err
@@ -61,9 +63,9 @@ func (c *Client) Get(url string) (responseBody []byte, err error) {
 	return respBody, nil
 }
 
+//GetNodes query the /nodes URL on the Proxmox API
 func (c *Client) GetNodes() ([]Node, error) {
-
-	respBody, err := c.Get("/nodes")
+	respBody, err := c.get("/nodes")
 	if err != nil {
 		return nil, err
 	}
@@ -76,9 +78,9 @@ func (c *Client) GetNodes() ([]Node, error) {
 	return nodeList, nil
 }
 
+//GetClusterResources query the /cluster/resources URL on the Proxmox API
 func (c *Client) GetClusterResources() ([]NodeResource, []VMResource, error) {
-
-	respBody, err := c.Get("/cluster/resources")
+	respBody, err := c.get("/cluster/resources")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -89,4 +91,19 @@ func (c *Client) GetClusterResources() ([]NodeResource, []VMResource, error) {
 	}
 
 	return nodeList, vmList, nil
+}
+
+//GetNodeNetwork query the /nodes/<node name>/network URL on the Proxmox API
+func (c *Client) GetNodeNetwork(nodeName string) ([]NodeNetworkInterface, error) {
+	respBody, err := c.get("/nodes/" + nodeName + "/network")
+	if err != nil {
+		return nil, err
+	}
+
+	networkList, err := parseNodeNetwork(respBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return networkList, nil
 }
