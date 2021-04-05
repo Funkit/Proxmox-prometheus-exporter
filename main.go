@@ -31,7 +31,7 @@ func main() {
 	// /cluster/resources
 
 	nodeList, vmList, err3 := client.GetClusterResources()
-	if err != nil {
+	if err3 != nil {
 		log.Fatal(err3)
 	}
 
@@ -41,5 +41,13 @@ func main() {
 
 	for _, node := range nodeList {
 		fmt.Println("Node:" + node.Node + "; Status:" + node.Status)
+
+		networkInterfaceList, err4 := client.GetNodeNetwork(node.Node)
+		if err4 != nil {
+			log.Fatal(err4)
+		}
+		for _, networkInterface := range networkInterfaceList {
+			fmt.Println(networkInterface)
+		}
 	}
 }

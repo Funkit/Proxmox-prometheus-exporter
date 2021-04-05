@@ -92,3 +92,18 @@ func (c *Client) GetClusterResources() ([]NodeResource, []VMResource, error) {
 
 	return nodeList, vmList, nil
 }
+
+//GetNodeNetwork query the /nodes/<node name>/network URL on the Proxmox API
+func (c *Client) GetNodeNetwork(nodeName string) ([]NodeNetworkInterface, error) {
+	respBody, err := c.get("/nodes/" + nodeName + "/network")
+	if err != nil {
+		return nil, err
+	}
+
+	networkList, err := parseNodeNetwork(respBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return networkList, nil
+}
