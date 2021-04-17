@@ -52,8 +52,11 @@ func (node *VMResource) ParseMap(element map[string]interface{}) error {
 
 //NodeResource Node resource type at /cluster/resources
 type NodeResource struct {
-	Node   string `json:"node"`
-	Status string `json:"status"`
+	Node              string  `json:"node"`
+	Status            string  `json:"status"`
+	CPU               float64 `json:"cpu"`    // %
+	AllocatedRAMBytes int     `json:"maxmem"` // in bytes
+	RAM               int     `json:"mem"`    // in bytes
 }
 
 //ParseMap parse generic map into the object

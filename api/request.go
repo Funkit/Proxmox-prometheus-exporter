@@ -2,6 +2,7 @@ package api
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -61,6 +62,22 @@ func (c *Client) get(url string) (responseBody []byte, err error) {
 	}
 
 	return respBody, nil
+}
+
+//GetRawResponse query the API endpoint and return the response body before serialization
+func (c *Client) GetRawResponse(url string) (*Results, error) {
+	respBody, err := c.get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var buffer Results
+
+	if err := json.Unmarshal([]byte(respBody), &buffer); err != nil {
+		return nil, err
+	}
+
+	return &buffer, nil
 }
 
 //GetNodes query the /nodes URL on the Proxmox API

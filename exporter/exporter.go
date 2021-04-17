@@ -8,20 +8,25 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "myapp_processed_ops_total",
-		Help: "The total number of processed events",
-	})
-	cpuLoad = prometheus.NewGauge(prometheus.GaugeOpts{
-		Namespace: "PVE",
-		Subsystem: "hardware",
-		Name:      "cpu_current",
-		Help:      "Current CPU load.",
-	})
+	cpuLoad = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "PVE",
+			Subsystem: "hardware",
+			Name:      "cpu_current",
+			Help:      "Current CPU load.",
+		},
+		[]string{
+			// name of the hypervisor, VM or container
+			"name",
+			// Of what type is the element: host, VM or container
+			"type",
+			// matching resource pool
+			"pool",
+		},
+	)
 )
 
 func init() {
@@ -31,20 +36,19 @@ func init() {
 func recordMetrics(accessInfo *connection.Info, conf *Configuration) {
 	//go func() {
 	client := api.NewClient(accessInfo)
-	counter := 0
 	for {
 		nodeList, vmList, err := client.GetClusterResources()
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, vm := range vmList {
-			fmt.Printf("%v:%v\n", counter, vm)
+			fmt.Println("target", vm.Name, "has CPU", vm.CPU)
+			//cpuLoad.WithLabelValues(vm.Name, "VM", "none").Add(vm.CPU)
 		}
 		for _, node := range nodeList {
-			fmt.Printf("%v:%v\n", counter, node)
+			fmt.Println("target", node.Node, "has CPU", node.CPU)
 		}
-		counter++
-		opsProcessed.Inc()
+
 		time.Sleep(time.Duration(conf.QueryPeriod) * time.Second)
 	}
 	//}()
