@@ -1,2 +1,2 @@
 exposed_port: 2122
-query_period_sec: 5
+query_period_sec: 10

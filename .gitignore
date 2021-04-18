@@ -19,3 +19,6 @@
 
 # test files output
 test/
+
+# compiled exporter output
+output/
