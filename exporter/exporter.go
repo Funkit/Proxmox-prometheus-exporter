@@ -11,28 +11,32 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func init() {
+//RegisterMetrics register all Prometheus metrics
+func RegisterMetrics() {
 	prometheus.MustRegister(cpuLoad)
+}
+
+func exportClusterResources(client *api.Client) {
+	nodeList, vmList, err := client.GetClusterResources()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, vm := range vmList {
+		cpuLoad.WithLabelValues(vm.Name, "VM", vm.Pool).Add(vm.CPU)
+		maxCpu.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.AllocatedCPUCores))
+		ramLoad.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.RAM))
+		maxRam.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.AllocatedRAMBytes))
+	}
+	for _, node := range nodeList {
+		cpuLoad.WithLabelValues(node.Node, "Node", "N/A").Add(node.CPU)
+	}
 }
 
 func recordMetrics(accessInfo *connection.Info, conf *Configuration) {
 	go func() {
 		client := api.NewClient(accessInfo)
 		for {
-			nodeList, vmList, err := client.GetClusterResources()
-			if err != nil {
-				log.Fatal(err)
-			}
-			for _, vm := range vmList {
-				cpuLoad.WithLabelValues(vm.Name, "VM", vm.Pool).Add(vm.CPU)
-				maxCpu.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.AllocatedCPUCores))
-				ramLoad.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.RAM))
-				maxRam.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.AllocatedRAMBytes))
-			}
-			for _, node := range nodeList {
-				cpuLoad.WithLabelValues(node.Node, "Node", "N/A").Add(node.CPU)
-			}
-
+			exportClusterResources(client)
 			time.Sleep(time.Duration(conf.QueryPeriod) * time.Second)
 		}
 	}()
