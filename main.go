@@ -1,6 +1,6 @@
 package main
 
-import "proxmox-prometheus-exporter/exporter"
+import "github.com/Funkit/proxmox-prometheus-exporter/exporter"
 
 const secretsFilePath = "../secrets/secrets_perso.yml"
 const configurationFilePath = "configuration.yml"

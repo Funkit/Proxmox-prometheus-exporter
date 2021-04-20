@@ -1,4 +1,4 @@
-module proxmox-prometheus-exporter
+module github.com/Funkit/proxmox-prometheus-exporter
 
 go 1.16
 
