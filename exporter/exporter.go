@@ -1,11 +1,13 @@
 package exporter
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
-	"proxmox-prometheus-exporter/api"
-	"proxmox-prometheus-exporter/connection"
 	"time"
+
+	"github.com/Funkit/pve-go-api/api"
+	apiconnection "github.com/Funkit/pve-go-api/connection"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -17,24 +19,24 @@ func RegisterMetrics() {
 }
 
 func exportClusterResources(client *api.Client) {
-	nodeList, vmList, err := client.GetClusterResources()
+	resList, err := client.GetClusterResources()
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, vm := range vmList {
-		cpuLoad.WithLabelValues(vm.Name, "VM", vm.Pool).Add(vm.CPU)
-		maxCpu.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.AllocatedCPUCores))
-		ramLoad.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.RAM))
-		maxRam.WithLabelValues(vm.Name, "VM", vm.Pool).Add(float64(vm.AllocatedRAMBytes))
-	}
-	for _, node := range nodeList {
-		cpuLoad.WithLabelValues(node.Node, "Node", "N/A").Add(node.CPU)
+	for _, res := range resList {
+		cpuLoad.WithLabelValues(res.Name, "VM", res.Pool).Add(res.CPU)
+		maxCpu.WithLabelValues(res.Name, "VM", res.Pool).Add(float64(res.AllocatedCPU))
+		ramLoad.WithLabelValues(res.Name, "VM", res.Pool).Add(float64(res.RAM))
+		maxRam.WithLabelValues(res.Name, "VM", res.Pool).Add(float64(res.AllocatedRAMBytes))
 	}
 }
 
-func recordMetrics(accessInfo *connection.Info, conf *Configuration) {
+func recordMetrics(accessInfo apiconnection.Info, conf Configuration) {
 	go func() {
-		client := api.NewClient(accessInfo)
+		client := api.NewClient(accessInfo, &http.Transport{
+			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+			ForceAttemptHTTP2: true,
+		})
 		for {
 			exportClusterResources(client)
 			time.Sleep(time.Duration(conf.QueryPeriod) * time.Second)
@@ -49,12 +51,12 @@ func ServeMetrics(secretsFilePath string, configurationFilePath string) {
 		log.Fatal(err)
 	}
 
-	connectionInfo, err := connection.GetInfoFromFile(secretsFilePath)
+	connectionInfo, err := apiconnection.ReadFile(secretsFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	recordMetrics(connectionInfo, configuration)
+	recordMetrics(*connectionInfo, configuration)
 
 	http.Handle(configuration.MetricsPath, promhttp.Handler())
 	http.ListenAndServe(":"+configuration.ExposedPort, nil)

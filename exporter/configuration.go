@@ -1,8 +1,7 @@
 package exporter
 
 import (
-	"io/ioutil"
-
+	"github.com/Funkit/proxmox-prometheus-exporter/common"
 	"gopkg.in/yaml.v2"
 )
 
@@ -23,18 +22,12 @@ func (c *Configuration) parseYaml(rawContent []byte) error {
 }
 
 //GetConfigurationFromFile Get connection information from a YAML file
-func GetConfigurationFromFile(filePath string) (*Configuration, error) {
-	rawContent, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-
+func GetConfigurationFromFile(filePath string) (Configuration, error) {
 	var c Configuration
 
-	err2 := c.parseYaml(rawContent)
-	if err2 != nil {
-		return nil, err
+	if err := common.GetInfo(filePath, &c); err != nil {
+		panic(err)
 	}
 
-	return &c, nil
+	return c, nil
 }
