@@ -10,6 +10,7 @@ type Configuration struct {
 	ExposedPort string `yaml:"exposed_port"`
 	QueryPeriod int    `yaml:"query_period_sec"`
 	MetricsPath string `yaml:"metrics_path"`
+	SecretsPath string `yaml:"secrets_file_path"`
 }
 
 func (c *Configuration) parseYaml(rawContent []byte) error {

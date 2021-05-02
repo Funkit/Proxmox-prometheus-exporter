@@ -19,7 +19,7 @@ var (
 			"pool",
 		},
 	)
-	maxCpu = prometheus.NewGaugeVec(
+	maxCPU = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: "PVE",
 			Subsystem: "hardware",
@@ -45,18 +45,34 @@ var (
 		[]string{
 			// name of the hypervisor, VM or container
 			"name",
+			// Of what type is the element: node, VM or container
+			"type",
+			// matching resource pool
+			"pool",
+		},
+	)
+	maxRAM = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "PVE",
+			Subsystem: "hardware",
+			Name:      "ram_max",
+			Help:      "Maximum RAM allocated",
+		},
+		[]string{
+			// name of the hypervisor, VM or container
+			"name",
 			// Of what type is the element: host, VM or container
 			"type",
 			// matching resource pool
 			"pool",
 		},
 	)
-	maxRam = prometheus.NewGaugeVec(
+	uptimeSec = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: "PVE",
 			Subsystem: "hardware",
-			Name:      "ram_max",
-			Help:      "Maximum RAM allocated",
+			Name:      "uptime",
+			Help:      "Uptime (sec)",
 		},
 		[]string{
 			// name of the hypervisor, VM or container
