@@ -1,10 +1,6 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/Funkit/pve-go-api v0.0.0-20210429131031-7b077f10b51f h1:xWEqGTiMgMrpVFK4/YjhHFVtMMMd3EHxPITOuWdRCZQ=
-github.com/Funkit/pve-go-api v0.0.0-20210429131031-7b077f10b51f/go.mod h1:aPKf4VeFNdUicyGn3OmELgemXdi6lgXvIFKQcdXl6S0=
-github.com/Funkit/pve-go-api v0.0.0-20210429135140-4db46ffb6054 h1:lBAQls1WZimrZmaNilsfBQhspTxAVDbImrM+vypBP+Y=
-github.com/Funkit/pve-go-api v0.0.0-20210429135140-4db46ffb6054/go.mod h1:aPKf4VeFNdUicyGn3OmELgemXdi6lgXvIFKQcdXl6S0=
 github.com/Funkit/pve-go-api v0.0.0-20210429140024-8aa2163823be h1:hNBuBnnkgA4VYQVwNk5ZNF/Eb8tqAWhANSyvZ+UL5xM=
 github.com/Funkit/pve-go-api v0.0.0-20210429140024-8aa2163823be/go.mod h1:aPKf4VeFNdUicyGn3OmELgemXdi6lgXvIFKQcdXl6S0=
 github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
