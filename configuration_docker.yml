@@ -1,0 +1,4 @@
+exposed_port: 2122
+query_period_sec: 10
+metrics_path: /pve
+secrets_file_path: secrets.yml

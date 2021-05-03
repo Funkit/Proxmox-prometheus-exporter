@@ -1,0 +1,34 @@
+- hosts: 127.0.0.1
+  connection: local
+  become: yes
+  vars:
+    docker_build_folder: /tmp/prometheus-exporter-container
+  tasks:
+    - name: Include variables
+      include_vars:
+        file: configuration.yml
+        name: config
+    - name: Delete build directory
+      file:
+        path: "{{ docker_build_folder }}"
+      state: absent
+    - name: create build directory
+      file:
+        path: "{{ docker_build_folder }}"
+      state: directory
+    - name: copy module files
+      copy:
+        src: "{{ playbook_dir }}"
+        dest: "{{ docker_build_folder }}"
+    - name: copy secrets folder
+      copy:
+        src: "{{ config.secrets_file_path }}"
+        dest: "{{ docker_build_folder }}"
+    - name: build image
+      community.docker.docker_image:
+        tag: pve-exporter:v1
+        source: build
+        build:
+          path: "{{ docker_build_folder }}/proxmox-prometheus-exporter/Dockerfile"
+
+    
