@@ -1,34 +1,43 @@
 - hosts: 127.0.0.1
   connection: local
-  become: yes
   vars:
-    docker_build_folder: /tmp/prometheus-exporter-container
+    docker_temp_build_folder: /tmp
   tasks:
     - name: Include variables
       include_vars:
         file: configuration.yml
         name: config
-    - name: Delete build directory
+    - name: create target folder
       file:
-        path: "{{ docker_build_folder }}"
-      state: absent
-    - name: create build directory
-      file:
-        path: "{{ docker_build_folder }}"
-      state: directory
-    - name: copy module files
+        path: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter"
+        state: directory
+    - name: copy build files
       copy:
-        src: "{{ playbook_dir }}"
-        dest: "{{ docker_build_folder }}"
-    - name: copy secrets folder
+        src: "{{ playbook_dir }}/{{ item }}"
+        dest: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter"
+      with_items:
+        - common
+        - exporter
+        - go.mod
+        - go.sum
+        - main.go
+        - configuration.yml
+        - Dockerfile
+    - name: copy secrets file inside the folder
       copy:
         src: "{{ config.secrets_file_path }}"
-        dest: "{{ docker_build_folder }}"
-    - name: build image
-      community.docker.docker_image:
-        tag: pve-exporter:v1
-        source: build
-        build:
-          path: "{{ docker_build_folder }}/proxmox-prometheus-exporter/Dockerfile"
+        dest: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter/secrets.yml"
+    - name: change config file to point to the proper secret file
+      lineinfile:
+        path: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter/configuration.yml"
+        regexp: 'secrets_file_path:.*'
+        line: "secrets_file_path: secrets.yml"
+
+    #- name: build image
+    #  community.docker.docker_image:
+    #    tag: pve-exporter:v1
+    #    source: build
+    #    build:
+    #      path: "{{ docker_build_folder }}/proxmox-prometheus-exporter/Dockerfile"
 
     
