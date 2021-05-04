@@ -3,6 +3,7 @@ FROM golang:1.16 AS build-env
 ADD . /dockerdev
 WORKDIR /dockerdev
 RUN go build -o /server
+COPY configuration.yml /server /
 
 # Final stage
 FROM debian:buster
