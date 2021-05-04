@@ -2,6 +2,7 @@ package exporter
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -60,6 +61,8 @@ func recordMetrics(conf Configuration) {
 			panic(err)
 		}
 
+		fmt.Println("Connecting to PVE at", connectionInfo.Address)
+
 		client := api.NewClient(*connectionInfo, &http.Transport{
 			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
 			ForceAttemptHTTP2: true,
@@ -77,6 +80,8 @@ func ServeMetrics(configurationFilePath string) {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("Metrics path:", configuration.MetricsPath, "; exposed port:", configuration.ExposedPort)
 
 	recordMetrics(configuration)
 
