@@ -40,11 +40,17 @@
     - name: build image
       community.docker.docker_image:
         name: pve-exporter
-        tag: v1
+        tag: latest
         source: build
         build:
           path: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter"
         archive_path: "{{ output_folder }}/pve-exporter.tar"
+      become: yes
+    - name: remove intermediate images
+      community.docker.docker_prune:
+        images: yes
+        images_filters: 
+          label: "stage=builder"
       become: yes
     - name: remove temporary build folder
       file:
