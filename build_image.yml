@@ -1,7 +1,6 @@
 - hosts: 127.0.0.1
   connection: local
   vars:
-    output_folder: /tmp/docker-build-output
     docker_temp_build_folder: /tmp
   tasks:
     - name: Include variables
@@ -32,11 +31,12 @@
       lineinfile:
         path: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter/configuration.yml"
         regexp: 'secrets_file_path:.*'
-        line: "secrets_file_path: secrets.yml"
-    - name: make sure the output folder exists
-      file:
-        path: "{{ output_folder }}"
-        state: directory
+        line: "secrets_file_path: /pve-exporter/config/secrets.yml"
+    - name: change main.go file to point to the proper configuration path
+      lineinfile:
+        path: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter/main.go"
+        regexp: 'const configurationFilePath =.*'
+        line: 'const configurationFilePath = "/pve-exporter/config/configuration.yml"'
     - name: build image
       community.docker.docker_image:
         name: pve-exporter
@@ -44,7 +44,7 @@
         source: build
         build:
           path: "{{ docker_temp_build_folder }}/proxmox-prometheus-exporter"
-        archive_path: "{{ output_folder }}/pve-exporter.tar"
+        archive_path: "pve-exporter.tar"
       become: yes
     - name: remove intermediate images
       community.docker.docker_prune:

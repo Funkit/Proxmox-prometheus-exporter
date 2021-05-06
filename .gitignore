@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# image build output
+*.tar
+
 # Test binary, built with `go test -c`
 *.test
 
