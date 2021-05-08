@@ -1,0 +1,12 @@
+- hosts: all
+  tasks:
+    - name: start pve-exporter container
+      community.general.docker_container:
+        name: pve-exporter
+        image: funkit/pve-exporter
+        state: started
+        recreate: yes
+        restart: yes
+        restart_policy: always
+        published_ports:
+          - 2122:2122/tcp

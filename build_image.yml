@@ -39,7 +39,7 @@
         line: 'const configurationFilePath = "/pve-exporter/config/configuration.yml"'
     - name: build image
       community.docker.docker_image:
-        name: pve-exporter
+        name: funkit/pve-exporter
         tag: latest
         source: build
         build:
